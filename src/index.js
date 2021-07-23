@@ -9,6 +9,7 @@ import { getIndent, getDeindentLevel } from './utils/getIdent';
 
 type Props = React.ElementConfig<'div'> & {
   // Props for the component
+  isSingleLine: boolean,
   value: string,
   onValueChange: (value: string) => mixed,
   highlight: (value: string) => string | React.Node,
@@ -65,7 +66,7 @@ const KEYCODE_BACK_QUOTE = 192;
 const HISTORY_LIMIT = 100;
 const HISTORY_TIME_GAP = 3000;
 
-const isSingleLine = true;
+// const this.props.isSingleLine = true;
 
 const isWindows = 'navigator' in window && /Win/i.test(navigator.platform);
 const isMacLike =
@@ -122,7 +123,7 @@ export default class Editor extends React.Component<Props, State> {
     this._recordCurrentState();
 
     // cjg : added singleLine
-    if (isSingleLine) {
+    if (this.props.isSingleLine) {
       const $pre = this.pre;
 
       $pre.addEventListener('compositionstart', () => {
@@ -137,7 +138,7 @@ export default class Editor extends React.Component<Props, State> {
 
   // cjg: added singleLine
   componentDidUpdate() {
-    if (isSingleLine && this.selection) {
+    if (this.props.isSingleLine && this.selection) {
       selectionRange(this.pre, this.selection);
     }
   }
@@ -275,7 +276,7 @@ export default class Editor extends React.Component<Props, State> {
     const { tabSize, insertSpaces, ignoreTabKey, onKeyDown } = this.props;
 
     // cjg: added singlelineVersopm
-    if (isSingleLine) {
+    if (this.props.isSingleLine) {
       this._singleLineHandleKeyDown(e);
       this.props.onKeyDown(e);
       return;
@@ -502,7 +503,7 @@ export default class Editor extends React.Component<Props, State> {
 
   // cjg: added singleLine
   _handleKeyUp = (e: *) => {
-    if (isSingleLine) {
+    if (this.props.isSingleLine) {
       this._singleLineHandleKeyUp(e);
     }
     this.props.onKeyUp(e);
@@ -510,7 +511,7 @@ export default class Editor extends React.Component<Props, State> {
 
   /* extracted from react-prism-editor */
   _handleClick(e: *) {
-    if (isSingleLine) {
+    if (this.props.isSingleLine) {
       this.selection = selectionRange(this.pre);
     }
     this.props.onClick(e);
@@ -711,7 +712,7 @@ export default class Editor extends React.Component<Props, State> {
       'data-gramm': false,
     };
 
-    const editorComponent = !isSingleLine ? (
+    const editorComponent = !this.props.isSingleLine ? (
       <div>
         <textarea
           ref={this._inputRef}

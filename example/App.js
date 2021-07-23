@@ -55,6 +55,7 @@ class App extends React.Component<{}, State> {
               highlight={code => highlight(code, languages.jsx)}
               padding={10}
               className="container__editor"
+              isSingleLine
             />
           </div>
         </div>
