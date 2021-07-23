@@ -510,15 +510,15 @@ export default class Editor extends React.Component<Props, State> {
   };
 
   /* extracted from react-prism-editor */
-  _handleClick(e: *) {
+  _handleClick = (e: *) => {
     if (this.props.isSingleLine) {
       this.selection = selectionRange(this.pre);
     }
     this.props.onClick(e);
-  }
+  };
 
   /* extracted from react-prism-editor */
-  _singleLineHandleKeyUp(evt) {
+  _singleLineHandleKeyUp = evt => {
     const keyupCode = evt.which;
     if (this.composing) {
       if (keyupCode === 13) {
@@ -557,10 +557,10 @@ export default class Editor extends React.Component<Props, State> {
     } else {
       this.undoTimestamp = 0;
     }
-  }
+  };
 
   /* extracted from react-prism-editor */
-  _singleLineHandleKeyDown(evt) {
+  _singleLineHandleKeyDown = evt => {
     if (evt.keyCode === 9 && !this.ignoreTabKey) {
       document.execCommand('insertHTML', false, '  ');
       evt.preventDefault();
@@ -607,7 +607,7 @@ export default class Editor extends React.Component<Props, State> {
     //   // }
     //   //evt.preventDefault();
     // }
-  }
+  };
 
   _handleChange = (e: *) => {
     const { value, selectionStart, selectionEnd } = e.target;
@@ -690,7 +690,6 @@ export default class Editor extends React.Component<Props, State> {
     const commonProps = {
       className: className,
       id: textareaId,
-      value: value,
       onKeyDown: this._handleKeyDown,
       onKeyUp: this._handleKeyUp,
       onClick: this._handleClick,
@@ -715,6 +714,7 @@ export default class Editor extends React.Component<Props, State> {
     const editorComponent = !this.props.isSingleLine ? (
       <div>
         <textarea
+          value={value}
           ref={this._inputRef}
           style={{
             ...styles.common,
