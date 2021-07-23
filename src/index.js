@@ -2,6 +2,11 @@
 
 import * as React from 'react';
 
+/*extracted from react-prism-editor*/
+import selectionRange from './utils/selection';
+import { FORBIDDEN_KEYS } from './utils/constant';
+import { getIndent, getDeindentLevel } from './utils/getIdent';
+
 type Props = React.ElementConfig<'div'> & {
   // Props for the component
   value: string,
@@ -60,6 +65,8 @@ const KEYCODE_BACK_QUOTE = 192;
 const HISTORY_LIMIT = 100;
 const HISTORY_TIME_GAP = 3000;
 
+const isSingleLine = true;
+
 const isWindows = 'navigator' in window && /Win/i.test(navigator.platform);
 const isMacLike =
   'navigator' in window && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
@@ -73,7 +80,6 @@ const cssText = /* CSS */ `
 .${className}:empty {
   -webkit-text-fill-color: inherit !important;
 }
-
 /**
  * Hack to apply on some CSS on IE10 and IE11
  */
@@ -86,7 +92,6 @@ const cssText = /* CSS */ `
   .${className} {
     color: transparent !important;
   }
-
   .${className}::selection {
     background-color: #accef7 !important;
     color: transparent !important;
@@ -102,12 +107,39 @@ export default class Editor extends React.Component<Props, State> {
     padding: 0,
   };
 
+  // cjg: added singleLine
+  constructor(props) {
+    super(props);
+    this.elementRef = React.createRef();
+  }
+
   state = {
     capture: true,
+    selection: undefined,
   };
 
   componentDidMount() {
     this._recordCurrentState();
+
+    // cjg : added singleLine
+    if (isSingleLine) {
+      const $pre = this.pre;
+
+      $pre.addEventListener('compositionstart', () => {
+        this.composing = true;
+      });
+      $pre.addEventListener('compositionend', () => {
+        // for canceling input.
+        this.composing = false;
+      });
+    }
+  }
+
+  // cjg: added singleLine
+  componentDidUpdate() {
+    if (isSingleLine && this.selection) {
+      selectionRange(this.pre, this.selection);
+    }
   }
 
   _recordCurrentState = () => {
@@ -241,6 +273,13 @@ export default class Editor extends React.Component<Props, State> {
 
   _handleKeyDown = (e: *) => {
     const { tabSize, insertSpaces, ignoreTabKey, onKeyDown } = this.props;
+
+    // cjg: added singlelineVersopm
+    if (isSingleLine) {
+      this._singleLineHandleKeyDown(e);
+      this.props.onKeyDown(e);
+      return;
+    }
 
     if (onKeyDown) {
       onKeyDown(e);
@@ -461,6 +500,114 @@ export default class Editor extends React.Component<Props, State> {
     }
   };
 
+  // cjg: added singleLine
+  _handleKeyUp = (e: *) => {
+    if (isSingleLine) {
+      this._singleLineHandleKeyUp(e);
+    }
+    this.props.onKeyUp(e);
+  };
+
+  /* extracted from react-prism-editor */
+  _handleClick(e: *) {
+    if (isSingleLine) {
+      this.selection = selectionRange(this.pre);
+    }
+    this.props.onClick(e);
+  }
+
+  /* extracted from react-prism-editor */
+  _singleLineHandleKeyUp(evt) {
+    const keyupCode = evt.which;
+    if (this.composing) {
+      if (keyupCode === 13) {
+        // finish inputting via IM.
+        this.composing = false;
+      } else {
+        // now inputting words using IM.
+        // must not update view.
+        return;
+      }
+    }
+
+    if (!this.code) {
+      this.codeData = evt.target.innerText;
+    }
+
+    if (
+      evt.keyCode === 91 || // left cmd
+      evt.keyCode === 93 || // right cmd
+      evt.ctrlKey ||
+      evt.metaKey
+    ) {
+      return;
+    }
+
+    // Enter key
+    if (evt.keyCode === 13) {
+      this.undoTimestamp = 0;
+    }
+
+    this.selection = selectionRange(this.pre);
+
+    if (!Object.values(FORBIDDEN_KEYS).includes(evt.keyCode)) {
+      var text = evt.target.innerText;
+      this.props.onValueChange(text);
+    } else {
+      this.undoTimestamp = 0;
+    }
+  }
+
+  /* extracted from react-prism-editor */
+  _singleLineHandleKeyDown(evt) {
+    if (evt.keyCode === 9 && !this.ignoreTabKey) {
+      document.execCommand('insertHTML', false, '  ');
+      evt.preventDefault();
+    } else if (evt.keyCode === 8) {
+      // Backspace Key
+      const { start: cursorPos, end: cursorEndPos } = selectionRange(this.pre);
+      if (cursorPos !== cursorEndPos) {
+        return; // Bail on selections
+      }
+
+      const deindent = getDeindentLevel(this.pre.innerText, cursorPos);
+      if (deindent <= 0) {
+        return; // Bail when deindent level defaults to 0
+      }
+
+      // Delete chars `deindent` times
+      for (let i = 0; i < deindent; i++) {
+        document.execCommand('delete', false);
+      }
+
+      evt.preventDefault();
+    } else if (evt.keyCode === 13) {
+      // Enter Key
+      const { start: cursorPos } = selectionRange(this.pre);
+      const indentation = getIndent(this.pre.innerText, cursorPos);
+
+      // https://stackoverflow.com/questions/35585421
+      // add a space and remove it. it works :/
+      document.execCommand('insertHTML', false, '\n ' + indentation);
+      document.execCommand('delete', false);
+
+      evt.preventDefault();
+    }
+    // else if (
+    //   // Undo / Redo
+    //   evt.keyCode === 90 &&
+    //   evt.metaKey !== evt.ctrlKey &&
+    //   !evt.altKey
+    // ) {
+    //   // if (evt.shiftKey) {
+    //   //   //this.redo();
+    //   // } else {
+    //   //   //  this.undo();
+    //   // }
+    //   //evt.preventDefault();
+    // }
+  }
+
   _handleChange = (e: *) => {
     const { value, selectionStart, selectionEnd } = e.target;
 
@@ -519,8 +666,8 @@ export default class Editor extends React.Component<Props, State> {
       onClick,
       onFocus,
       onBlur,
-      onKeyUp,
       /* eslint-disable no-unused-vars */
+      onKeyUp,
       onKeyDown,
       onValueChange,
       tabSize,
@@ -539,8 +686,33 @@ export default class Editor extends React.Component<Props, State> {
 
     const highlighted = highlight(value);
 
-    return (
-      <div {...rest} style={{ ...styles.container, ...style }}>
+    const commonProps = {
+      className: className,
+      id: textareaId,
+      value: value,
+      onKeyDown: this._handleKeyDown,
+      onKeyUp: this._handleKeyUp,
+      onClick: this._handleClick,
+      onFocus: onFocus,
+      onBlur: onBlur,
+      disabled: disabled,
+      form: form,
+      maxLength: maxLength,
+      minLength: minLength,
+      name: name,
+      placeholder: placeholder,
+      readOnly: readOnly,
+      required: required,
+      autoFocus: autoFocus,
+      autoCapitalize: 'off',
+      autoComplete: 'off',
+      autoCorrect: 'off',
+      spellCheck: false,
+      'data-gramm': false,
+    };
+
+    const editorComponent = !isSingleLine ? (
+      <div>
         <textarea
           ref={this._inputRef}
           style={{
@@ -548,29 +720,8 @@ export default class Editor extends React.Component<Props, State> {
             ...styles.textarea,
             ...contentStyle,
           }}
-          className={className}
-          id={textareaId}
-          value={value}
+          {...commonProps}
           onChange={this._handleChange}
-          onKeyDown={this._handleKeyDown}
-          onClick={onClick}
-          onKeyUp={onKeyUp}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          disabled={disabled}
-          form={form}
-          maxLength={maxLength}
-          minLength={minLength}
-          name={name}
-          placeholder={placeholder}
-          readOnly={readOnly}
-          required={required}
-          autoFocus={autoFocus}
-          autoCapitalize="off"
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck={false}
-          data-gramm={false}
         />
         <pre
           aria-hidden="true"
@@ -579,6 +730,23 @@ export default class Editor extends React.Component<Props, State> {
             ? { dangerouslySetInnerHTML: { __html: highlighted + '<br />' } }
             : { children: highlighted })}
         />
+      </div>
+    ) : (
+      <pre
+        ref={ref => (this.pre = ref)}
+        {...commonProps}
+        contentEditable="true"
+        aria-hidden="true"
+        style={{ ...styles.singleLine, ...styles.common }}
+        {...(typeof highlighted === 'string'
+          ? { dangerouslySetInnerHTML: { __html: highlighted /*+ '<br />'*/ } }
+          : { children: highlighted })}
+      />
+    );
+
+    return (
+      <div {...rest} style={{ ...styles.container, ...style }}>
+        {editorComponent}
         {/* eslint-disable-next-line react/no-danger */}
         <style type="text/css" dangerouslySetInnerHTML={{ __html: cssText }} />
       </div>
@@ -612,6 +780,16 @@ const styles = {
     pointerEvents: 'none',
   },
   editor: {
+    whiteSpace: 'pre-wrap',
+  },
+  singleLine: {
+    whiteSpace: 'pre',
+    outline: 'none',
+  },
+  common: {
+    wordBreak: 'break-all',
+    overflowWrap: 'anywhere',
+    overflow: 'hidden',
     margin: 0,
     border: 0,
     background: 'none',
@@ -628,8 +806,5 @@ const styles = {
     textIndent: 'inherit',
     textRendering: 'inherit',
     textTransform: 'inherit',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'keep-all',
-    overflowWrap: 'break-word',
   },
 };
