@@ -717,6 +717,7 @@ export default class Editor extends React.Component<Props, State> {
         <textarea
           ref={this._inputRef}
           style={{
+            ...styles.common,
             ...styles.editor,
             ...styles.textarea,
             ...contentStyle,
@@ -726,7 +727,12 @@ export default class Editor extends React.Component<Props, State> {
         />
         <pre
           aria-hidden="true"
-          style={{ ...styles.editor, ...styles.highlight, ...contentStyle }}
+          style={{
+            ...styles.common,
+            ...styles.editor,
+            ...styles.highlight,
+            ...contentStyle,
+          }}
           {...(typeof highlighted === 'string'
             ? { dangerouslySetInnerHTML: { __html: highlighted + '<br />' } }
             : { children: highlighted })}
