@@ -1,0 +1,98 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - babel-core > babel-generator > babel-types > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-core > babel-generator > babel-types > lodash
+    - babel-core > babel-helpers > babel-template > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-core > babel-helpers > babel-template > lodash
+    - babel-plugin-transform-class-properties > babel-helper-function-name > babel-template > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-plugin-transform-class-properties > babel-helper-function-name >
+          babel-template > lodash
+    - babel-cli > babel-register > babel-core > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-cli > babel-register > babel-core > lodash
+    - babel-cli > babel-core > babel-register > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-cli > babel-core > babel-register > lodash
+    - babel-cli > babel-core > babel-generator > babel-types > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-cli > babel-core > babel-generator > babel-types > lodash
+    - babel-plugin-transform-class-properties > babel-helper-function-name > babel-helper-get-function-arity > babel-types > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-plugin-transform-class-properties > babel-helper-function-name >
+          babel-helper-get-function-arity > babel-types > lodash
+    - babel-core > babel-helpers > babel-template > babel-traverse > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-core > babel-helpers > babel-template > babel-traverse > lodash
+    - babel-plugin-transform-class-properties > babel-helper-function-name > babel-template > babel-traverse > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-plugin-transform-class-properties > babel-helper-function-name >
+          babel-template > babel-traverse > lodash
+    - babel-cli > babel-core > babel-helpers > babel-template > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-cli > babel-core > babel-helpers > babel-template > lodash
+    - release-it > conventional-changelog > conventional-changelog-core > conventional-commits-parser > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          release-it > conventional-changelog > conventional-changelog-core >
+          conventional-commits-parser > lodash
+    - eslint-config-satya164 > babel-eslint > @babel/traverse > @babel/generator > @babel/types > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          eslint-config-satya164 > babel-eslint > @babel/traverse >
+          @babel/generator > @babel/types > lodash
+    - babel-cli > babel-core > babel-helpers > babel-template > babel-traverse > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-cli > babel-core > babel-helpers > babel-template >
+          babel-traverse > lodash
+    - babel-preset-env > babel-plugin-transform-async-to-generator > babel-helper-remap-async-to-generator > babel-helper-function-name > babel-template > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-preset-env > babel-plugin-transform-async-to-generator >
+          babel-helper-remap-async-to-generator > babel-helper-function-name >
+          babel-template > lodash
+    - '@babel/preset-env > @babel/plugin-proposal-async-generator-functions > @babel/helper-remap-async-to-generator > @babel/helper-wrap-function > @babel/traverse > @babel/generator > lodash':
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @babel/preset-env > @babel/plugin-proposal-async-generator-functions >
+          @babel/helper-remap-async-to-generator > @babel/helper-wrap-function >
+          @babel/traverse > @babel/generator > lodash
+    - babel-preset-env > babel-plugin-transform-async-to-generator > babel-helper-remap-async-to-generator > babel-helper-function-name > babel-helper-get-function-arity > babel-types > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-preset-env > babel-plugin-transform-async-to-generator >
+          babel-helper-remap-async-to-generator > babel-helper-function-name >
+          babel-helper-get-function-arity > babel-types > lodash
+    - babel-preset-env > babel-plugin-transform-async-to-generator > babel-helper-remap-async-to-generator > babel-helper-function-name > babel-template > babel-traverse > lodash:
+        patched: '2024-02-03T22:11:40.618Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-preset-env > babel-plugin-transform-async-to-generator >
+          babel-helper-remap-async-to-generator > babel-helper-function-name >
+          babel-template > babel-traverse > lodash
